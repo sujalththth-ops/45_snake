@@ -1,16 +1,21 @@
+
 import pygame
+
 
 class Snake:
     def __init__(self, x, y, cell_size):
         self.cell_size = cell_size
-        # body is a list of (x, y) grid-cell positions, head is body[0]
         self.body = [(x, y), (x - 1, y), (x - 2, y)]
-        self.direction = (1, 0)  # moving right
+        self.direction = (1, 0)
         self.grow_pending = False
 
     def set_direction(self, dx, dy):
-        # NOTE: does not currently guard against reversing directly
-        # into the segment behind the head.
+        current_dx, current_dy = self.direction
+
+        # Reject a direct 180-degree reversal.
+        if (dx, dy) == (-current_dx, -current_dy):
+            return
+
         self.direction = (dx, dy)
 
     def move(self):
@@ -29,12 +34,22 @@ class Snake:
 
     def head_rect(self):
         x, y = self.body[0]
-        return pygame.Rect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size)
+        return pygame.Rect(
+            x * self.cell_size,
+            y * self.cell_size,
+            self.cell_size,
+            self.cell_size,
+        )
 
     def segment_rects(self):
         return [
-            pygame.Rect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size)
-            for (x, y) in self.body
+            pygame.Rect(
+                x * self.cell_size,
+                y * self.cell_size,
+                self.cell_size,
+                self.cell_size,
+            )
+            for x, y in self.body
         ]
 
     def collides_with_self(self):
@@ -43,4 +58,9 @@ class Snake:
 
     def collides_with_wall(self, grid_width, grid_height):
         x, y = self.body[0]
-        return x < 0 or y < 0 or x >= grid_width or y >= grid_height
+        return (
+            x < 0
+            or y < 0
+            or x >= grid_width
+            or y >= grid_height
+        )

@@ -30,12 +30,18 @@ def main():
             if event.type == pygame.KEYDOWN:
                 engine.handle_keydown(event.key)
 
+
         engine.handle_input()
         engine.update()
+
+        if engine.exiting:
+            running = False
+
         engine.render(SCREEN)
 
         pygame.display.flip()
         clock.tick(FPS)
+
 
     pygame.quit()
 
